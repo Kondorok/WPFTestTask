@@ -1,6 +1,8 @@
-﻿using System.Windows;
+﻿using System.Text.RegularExpressions;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
+using WpfApp.Extensions;
 using WpfApp.ViewModels;
 
 namespace WpfApp.Views
@@ -13,21 +15,15 @@ namespace WpfApp.Views
         public MainWindow()
         {
             InitializeComponent();
-            DataContext = new ApplicationViewModel();
+            DataContext = new ApplicationViewModel(); //Using ViewModel as DataContext
         }
 
-        private void TextBox_Changed(object sender, RoutedEventArgs e)
-        { 
-            TextBox x = (TextBox)sender;
-            if (x.Text.Length>5)
-            x.Foreground = Brushes.Red;
-        }
-
-        private async void Button_Click(object sender, RoutedEventArgs e)
+        private void Window_SizeChanged(object sender, SizeChangedEventArgs e)
         {
-            button.IsEnabled = false;
-            
-            button.IsEnabled = true;
+            Window window = sender as Window;
+            TextColumn.Width = window.Width / 2;
+            WordsCountColumn.Width = window.Width / 5;
+            VowelsCountColumn.Width = window.Width / 5;
         }
     }
 }

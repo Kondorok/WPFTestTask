@@ -1,5 +1,12 @@
 ﻿using static WpfApp.Constants;
 
+/*
+    Extensions for language working
+    GetLangOfChar return a language the char from is.
+    GetLangOfString return a language of the string. A language must be certain(Rus,Eng) or Unknown(include Mix).
+    RemoveWhitespace removes spaces in the string.
+ */
+
 namespace WpfApp.Extensions
 {
     public static class LangExt
@@ -12,6 +19,7 @@ namespace WpfApp.Extensions
         }
         public static Lang GetLangOfString(this string str)
         {
+            //If the first char from one language, other char must be from this language too, if the language is certain.
             bool isFirstLetterEng = str[0].GetLangOfChar() == Lang.English;
             if (isFirstLetterEng)
             {

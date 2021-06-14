@@ -1,13 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Linq;
 using static WpfApp.Constants;
 
+/*
+    String Handlers extensions.
+    GetWordCount return count of words in the string.
+    GetVowelsCoun return count of vowels in the string depend of language.
+    RemoveWhitespace removes spaces in the string.
+ */
 namespace WpfApp.Extensions
 {
-    public static class GetStrElemCountExt
+    public static class StringHandlersExt
     {
         public static int GetWordsCount(this string str)
         {
@@ -26,7 +28,7 @@ namespace WpfApp.Extensions
                     vowels = rusVowels;
                     break;
                 default:
-                    return -1;
+                    return -1; //If language is unknown or mixing
             }
             foreach (char c in str)
             {
@@ -36,8 +38,9 @@ namespace WpfApp.Extensions
         }
         public static string RemoveWhitespace(this string input)
         {
+            if (input == null) return "";
             return new string(input.ToCharArray()
-                .Where(c => !Char.IsWhiteSpace(c))
+                .Where(c => !char.IsWhiteSpace(c))
                 .ToArray());
         }
     }

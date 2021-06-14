@@ -3,9 +3,33 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
         xmlns:local="clr-namespace:WpfApp.Views"
         mc:Ignorable="d"
-        Title="MainWindow" Height="200" Width="600" MinWidth="600" MinHeight="200">
+        Title="MainWindow" Height="200" Width="600" MinWidth="600" MinHeight="200"
+        SizeChanged="Window_SizeChanged">
+    <Window.Resources>
+        <Style TargetType="TextBox">
+            <Style.Triggers>
+                <Trigger Property="Validation.HasError" Value="True">
+                    <Setter Property="ToolTip"
+                Value="{Binding RelativeSource={RelativeSource Self},
+                    Path=(Validation.Errors)[0].ErrorContent}" />
+                    <Setter Property="Foreground" Value="Red" />
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+        <ControlTemplate x:Key="validationFailed">
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Foreground="Red" FontSize="15" FontWeight="Bold">!</TextBlock>
+                <Border BorderBrush="Violet" BorderThickness="1">
+                    <AdornedElementPlaceholder />
+                </Border>
+            </StackPanel>
+        </ControlTemplate>
+    </Window.Resources>
+    
+    
     <Grid x:Name="MainRoot">
         <Grid.RowDefinitions>
             <RowDefinition Height="*"/>
@@ -20,21 +44,39 @@
             <ColumnDefinition />
             <ColumnDefinition />
         </Grid.ColumnDefinitions>
-        <Label x:Name="sss" Grid.Row="0" Content="Идентификаторы строк:" Grid.ColumnSpan="2" Margin="5,0,0,0" MinWidth="165" MinHeight="35" Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Center"/>
-        <TextBox TextChanged="TextBox_Changed"  x:Name="textBox" Text="{Binding Path=IndexesString, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Grid.Row="0" Grid.Column="2" Grid.ColumnSpan="3" MinWidth="250" VerticalAlignment="Center"/>
-        <Button x:Name="button" Command="{Binding FetchCommand}" Content="Подсчитать" Grid.Row="0" Grid.Column="5" Margin="5" Click="Button_Click"/>
+
+        <Label x:Name="sss" Grid.Row="0" Content="Идентификаторы строк:" Grid.ColumnSpan="2" MinWidth="165"  Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="0" Padding="20,5,5,10" />
+        <TextBox x:Name="textBox" Validation.ErrorTemplate="{StaticResource validationFailed}" Grid.Row="0" Grid.Column="2" Grid.ColumnSpan="3" MinWidth="250" VerticalAlignment="Center" Height="20" FontSize="15">
+            <TextBox.Text>
+                <Binding Path="indexesString.BeforeFormat" Mode="TwoWay" UpdateSourceTrigger="PropertyChanged">
+                    <Binding.ValidationRules>
+                        <DataErrorValidationRule />
+                    </Binding.ValidationRules>
+                </Binding>
+            </TextBox.Text>
+        </TextBox>
+        <Button x:Name="button" Command="{Binding FetchCommand}" CommandParameter="{Binding RelativeSource={RelativeSource Self}}" Content="Подсчитать" Grid.Row="0" Grid.Column="5" Margin="5" Height="20"/>
         <Border BorderBrush="Black" BorderThickness="1" Grid.Row="1" Grid.ColumnSpan="7" Margin="5,0,15,20">
-            <ListView Name="TableStringsView" ItemsSource="{Binding TableStrings}">
+            <ListView Name="TableStringsView" ItemsSource="{Binding TableStrings}" VerticalContentAlignment="Stretch" 
+                ScrollViewer.HorizontalScrollBarVisibility="Disabled">
                 <ListView.ItemContainerStyle>
                     <Style TargetType="ListViewItem">
-                        <Setter Property="HorizontalContentAlignment"  Value="Stretch"></Setter>
+                        <Setter Property="HorizontalContentAlignment"  Value="Left"></Setter>
+                        <Setter Property="VerticalContentAlignment"  Value="Stretch"></Setter>
+                        <Setter Property="Height" Value="{Binding RowHeight}"></Setter>
                     </Style>
                 </ListView.ItemContainerStyle>
                 <ListView.View>
                     <GridView>
-                        <GridViewColumn Header="Текст" DisplayMemberBinding="{Binding Path=Text}" Width="300"></GridViewColumn>
-                        <GridViewColumn Header="Количество слов" DisplayMemberBinding="{Binding Path=Words_Count}" Width="133"></GridViewColumn>
-                        <GridViewColumn Header="Количество гласных" DisplayMemberBinding="{Binding Path=Vowels_Count}" Width="133"></GridViewColumn>
+                        <GridViewColumn x:Name="TextColumn" Header="Текст" DisplayMemberBinding="{Binding Path=Text}" Width="300">
+                            <GridViewColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock TextWrapping="Wrap" Text="{Binding}" />
+                                </DataTemplate>
+                            </GridViewColumn.CellTemplate>
+                        </GridViewColumn>
+                        <GridViewColumn x:Name="WordsCountColumn" Header="Количество слов" DisplayMemberBinding="{Binding Path=Words_Count}" Width="133"></GridViewColumn>
+                        <GridViewColumn x:Name ="VowelsCountColumn" Header="Количество гласных" DisplayMemberBinding="{Binding Path=Vowels_Count}" Width="133"></GridViewColumn>
                     </GridView>
                 </ListView.View>
             </ListView>
